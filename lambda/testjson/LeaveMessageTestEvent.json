@@ -1,0 +1,23 @@
+{
+    "currentIntent": {
+      "slots": {
+        "MyName": "Rick Sanchez",
+        "CallReason": "Great Service",
+        "Date": "2018-05-15",
+        "Time": "13:50",
+        "CompanyName": "ECSD"
+      },
+      "name": "LeaveMessage",
+      "confirmationStatus": "None"
+    },
+    "bot": {
+      "alias": "$LATEST",
+      "version": "$LATEST",
+      "name": "BookTrip"
+    },
+    "userId": "TestLexUser",
+    "invocationSource": "DialogCodeHook",
+    "outputDialogMode": "Text",
+    "messageVersion": "1.0",
+    "sessionAttributes": {}
+  }

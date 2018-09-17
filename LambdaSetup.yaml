@@ -1,0 +1,78 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: AWS Connect Voice Message Playground
+
+Parameters:
+    UserName:
+      Description: Name of playground user
+      Type: String
+      Default: <PLAYGROUND USER>
+
+    Email: 
+      Description: SNS Subscription Email
+      Type: String
+      Default: <EMAIL>
+
+    S3Name: 
+      Description: S3 Bucket to store Lambda code
+      Type: String
+      Default: <S3 BUCKET>
+
+    TopicName: 
+      Description: Topic Name
+      Type: String
+      Default: <TOPIC NAME>
+
+Resources:
+
+  LeaveMessageLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Description: "Leave a Message from Lex"
+      FunctionName: !Sub LeaveMessage${UserName}
+      Handler: "LeaveMessage.lambda_handler"
+      Code:
+        S3Bucket: !Ref S3Name
+        S3Key: "LambdaFunctions.zip"
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/LambdaExecutionRole
+      Runtime: "python3.6"
+      Timeout: "30"
+      MemorySize : "128"
+      Environment:
+        Variables:
+            "TopicArn": !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${TopicName}
+
+  ConnectMessageSenderLambdaFunction:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Description: "Send Connect Information to Lex"
+      FunctionName: !Sub ConnectMessageSender${UserName}
+      Handler: "ConnectMessageSender.lambda_handler"
+      Code:
+        S3Bucket: !Ref S3Name
+        S3Key: "LambdaFunctions.zip"
+      Role: !Sub arn:aws:iam::${AWS::AccountId}:role/LambdaExecutionRole
+      Runtime: "python3.6"
+      Timeout: "30"
+      MemorySize : "128"
+      Environment:
+        Variables:
+            "TopicArn": !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${TopicName}
+
+  LambdaPermission:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:invokeFunction"
+      FunctionName: !GetAtt LeaveMessageLambdaFunction.Arn
+      Principal: "connect.amazonaws.com"
+      SourceAccount: !Sub ${AWS::AccountId}
+
+  
+  MailboxSNSTopic: 
+    Type: "AWS::SNS::Topic"
+    Properties: 
+      Subscription: 
+        - Endpoint: !Ref Email
+          Protocol: "email"
+      TopicName: !Ref TopicName
