@@ -364,10 +364,6 @@ Goto Line 11 and set <FLOW NAME> to something unique using your user name (lette
 
 ![](images/configure-flow-json.png)
 
-Save and close CallBot.json
-
-Compress CallBot.json so that it is contained within a .zip file.
-
 
 ### Create Amazon Connect Flow
 
